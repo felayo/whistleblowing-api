@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Report from "../models/report.js";
+import Report from "../models/Report.js";
 import Agency from "../models/Agency.js";
 import ErrorResponse from "../utils/errorResponse.js";
 import AuditLog from "../models/AuditLog.js";

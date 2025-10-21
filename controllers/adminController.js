@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import mongoose from "mongoose";
-import Report from "../models/report.js";
+import Report from "../models/Report.js";
 import AuditLog from "../models/AuditLog.js";
 import Agency from "../models/Agency.js";
 import Category from "../models/Category.js";
