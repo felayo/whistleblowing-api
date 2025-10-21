@@ -1,7 +1,7 @@
 // controllers/reportController.js
 import asyncHandler from "express-async-handler";
 import crypto from "crypto";
-import Report from "../models/report.js";
+import Report from "../models/Report.js";
 import AuditLog from "../models/AuditLog.js";
 import Category from "../models/Category.js";
 import Agency from "../models/Agency.js";

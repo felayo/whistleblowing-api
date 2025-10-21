@@ -25,6 +25,10 @@ const swaggerOptions = {
         url: "http://localhost:8081/api",
         description: "Local Server",
       },
+      {
+        url: "https://your-render-app-url.onrender.com/api",
+        description: "Render Deployment",
+      },
     ],
     components: {
       securitySchemes: {
@@ -41,16 +45,24 @@ const swaggerOptions = {
       },
     ],
   },
-  // 👇 Tells Swagger where to look for annotations
   apis: [
     path.resolve(__dirname, "./routes/*.js"),
-    path.resolve(__dirname, "./app.js"), // optional if you later add global tags
+    path.resolve(__dirname, "./app.js"),
   ],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 export const swaggerDocs = (app) => {
+  // ✅ Serve Swagger UI
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log("✅ Swagger Docs available at: http://localhost:8081/api-docs");
+
+  // ✅ Serve raw Swagger JSON
+  app.get("/swagger.json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(swaggerSpec);
+  });
+
+  // console.log("✅ Swagger Docs available at: http://localhost:8081/api-docs");
+  // console.log("✅ Swagger JSON available at: http://localhost:8081/swagger.json");
 };
