@@ -26,7 +26,7 @@ const swaggerOptions = {
         description: "Local Server",
       },
       {
-        url: "https://your-render-app-url.onrender.com/api",
+        url: "https://whistleblowing-api.onrender.com/api",
         description: "Render Deployment",
       },
     ],
@@ -63,6 +63,6 @@ export const swaggerDocs = (app) => {
     res.send(swaggerSpec);
   });
 
-  // console.log("✅ Swagger Docs available at: http://localhost:8081/api-docs");
-  // console.log("✅ Swagger JSON available at: http://localhost:8081/swagger.json");
+  console.log("✅ Swagger Docs available at: http://localhost:8081/api-docs");
+  console.log("✅ Swagger JSON available at: http://localhost:8081/swagger.json");
 };
