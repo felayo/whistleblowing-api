@@ -115,7 +115,7 @@ router.route("/").post(upload.array("evidenceFiles", 5), createReport);
  *       401:
  *         description: Invalid password or report not found
  */
-router.route("/follow-up").get(getReportByPassword);
+router.route("/follow-up").post(getReportByPassword);
 
 /**
  * @swagger
