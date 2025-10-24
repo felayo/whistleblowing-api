@@ -145,7 +145,7 @@ router.route("/follow-up").post(getReportByPassword);
  *                 type: string
  *                 description: Follow-up message or additional details
  *                 example: I have new evidence showing the suspect’s face.
- *               files:
+ *               evidenceFiles:
  *                 type: array
  *                 items:
  *                   type: string

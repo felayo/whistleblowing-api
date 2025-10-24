@@ -43,14 +43,25 @@ export const refresh = asyncHandler(async (req, res) => {
     const foundUser = await User.findOne({ email: decoded.email }).exec();
     if (!foundUser) return res.status(401).json({ message: "Unauthorized" });
 
+    // Generate new access token
     const token = jwt.sign(
       { id: foundUser._id, role: foundUser.role, email: foundUser.email },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.ACCESS_JWT_EXPIRE }
     );
 
-    res.json({ token });
+    // Return both token + user info for persistent login
+    res.json({
+      token,
+      user: {
+        id: foundUser._id,
+        name: foundUser.name,
+        email: foundUser.email,
+        role: foundUser.role,
+      },
+    });
   } catch (err) {
+    console.error("Refresh error:", err);
     return res.status(403).json({ message: "Forbidden" });
   }
 });
