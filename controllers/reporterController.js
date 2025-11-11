@@ -59,8 +59,8 @@ export const createReport = asyncHandler(async (req, res) => {
   }
 
   // ✅ Default category & agency
-  const defaultCategory = await Category.findOne({ name: "Other" });
-  const defaultAgency = await Agency.findOne({ name: "No Agency Assigned" });
+  const defaultCategory = await Category.findOne({ name: "uncategorised" });
+  const defaultAgency = await Agency.findOne({ name: "unassigned" });
 
   // ✅ Handle uploaded files (from S3)
   let evidenceFiles = [];

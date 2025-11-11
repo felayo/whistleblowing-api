@@ -11,13 +11,13 @@ import ErrorResponse from "../utils/errorResponse.js";
 // @access  Private (Admin/Agency)
 export const getUnassignedReports = asyncHandler(async (req, res) => {
   // Step 1: Get the default "No Agency Assigned" document
-  const defaultAgency = await Agency.findOne({ name: "No Agency Assigned" });
+  const defaultAgency = await Agency.findOne({ name: "unassigned" });
 
   if (!defaultAgency) {
     return res.status(404).json({
       success: false,
       message:
-        "Default 'No Agency Assigned' agency not found. Please check your setup.",
+        "Default 'unassigned' agency not found",
     });
   }
 
@@ -25,8 +25,8 @@ export const getUnassignedReports = asyncHandler(async (req, res) => {
   const unassignedReports = await Report.find({
     agencyAssigned: defaultAgency._id,
   })
-    .populate("category", "name") // optional: fetch category name only
-    .populate("agencyAssigned", "name") // optional: fetch agency name
+    .populate("category", "name") 
+    .populate("agencyAssigned", "name") 
     .sort({ createdAt: -1 });
 
   // Step 3: Respond
