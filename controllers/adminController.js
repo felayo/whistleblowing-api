@@ -16,8 +16,7 @@ export const getUnassignedReports = asyncHandler(async (req, res) => {
   if (!defaultAgency) {
     return res.status(404).json({
       success: false,
-      message:
-        "Default 'unassigned' agency not found",
+      message: "Default 'unassigned' agency not found",
     });
   }
 
@@ -25,8 +24,8 @@ export const getUnassignedReports = asyncHandler(async (req, res) => {
   const unassignedReports = await Report.find({
     agencyAssigned: defaultAgency._id,
   })
-    .populate("category", "name") 
-    .populate("agencyAssigned", "name") 
+    .populate("category", "name")
+    .populate("agencyAssigned", "name")
     .sort({ createdAt: -1 });
 
   // Step 3: Respond
@@ -223,16 +222,33 @@ export const updateReportStatus = asyncHandler(async (req, res) => {
     });
   }
 
-  const report = await Report.findByIdAndUpdate(id, { status }, { new: true })
-    .populate("category")
-    .populate("agencyAssigned");
+  // Fetch the report first so we can modify logic manually
+  const report = await Report.findById(id);
 
   if (!report) {
     return res
       .status(404)
       .json({ success: false, message: "Report not found." });
   }
+  // Business Logic for isResolved flag
+  if (status === "resolved") {
+    report.isResolved = true; // mark resolved permanently
+  } else if (status === "closed") {
+    // DO NOT MODIFY isResolved
+    // If unresolved case is closed, isResolved remains false
+  } else {
+    // pending or under review → reopened
+    report.isResolved = false;
+  }
+  // Update main status
+  report.status = status;
 
+  await report.save();
+
+  await report.populate("category");
+  await report.populate("agencyAssigned");
+
+  // Audit Trail
   await AuditLog.create({
     action: "STATUS_UPDATED",
     description: `Status of report ${report.caseID} changed to '${status}'`,
