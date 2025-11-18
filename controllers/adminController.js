@@ -359,7 +359,7 @@ export const createCategory = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/agencies
 // @access  Private (Admin only)
 export const createAgency = asyncHandler(async (req, res) => {
-  const { name, description, contactEmail, contactPhone } = req.body;
+  const { name, description, email, phone } = req.body;
 
   if (!name || name.trim() === "") {
     return res.status(400).json({
@@ -382,8 +382,8 @@ export const createAgency = asyncHandler(async (req, res) => {
   const agency = await Agency.create({
     name,
     description: description || "",
-    contactEmail,
-    contactPhone,
+    email,
+    phone,
   });
 
   await AuditLog.create({
