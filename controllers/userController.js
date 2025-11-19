@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 // @route   POST /api/admin/users
 // @access  Private (Admin only)
 export const createUser = asyncHandler(async (req, res) => {
-  const { email, username, password, role, agencyId, firstname, lastname } = req.body;
+  const { email, username, password, role, agencyId, firstname, lastname, phone } = req.body;
 
   // Validate required fields
   if (!email || !username || !password) {
@@ -51,6 +51,9 @@ export const createUser = asyncHandler(async (req, res) => {
     email,
     username,
     password,
+    firstname,
+    lastname,
+    phone,
     role: role || "agency",
   });
 
@@ -78,6 +81,7 @@ export const createUser = asyncHandler(async (req, res) => {
       username: newUser.username,
       firstname: newUser.firstname,
       lastname: newUser.lastname,
+      phone: newUser.phone,
       createdAt: newUser.createdAt,
       role: newUser.role,
       agencyAssigned: agencyId || null,
