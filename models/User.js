@@ -24,6 +24,11 @@ const UserSchema = new mongoose.Schema({
     enum: ["admin", "agency"],
     default: "agency",
   },
+  agency: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Agency",
+  default: null,
+  },
   password: {
     type: String,
     required: [true, "Please add a password"],

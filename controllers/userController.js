@@ -66,7 +66,9 @@ export const createUser = asyncHandler(async (req, res) => {
         message: "Agency not found",
       });
     }
-
+    // Assign agency to user
+    newUser.agency = agencyId;
+    await newUser.save();
     // Add the user to the agency’s users array
     agency.users.push(newUser._id);
     await agency.save();
@@ -94,10 +96,7 @@ export const createUser = asyncHandler(async (req, res) => {
 // @route   GET /api/admin/users
 // @access  Private (Admin only)
 export const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select(
-    "firstname lastname username active createdAt"
-  ); // only necessary fields
-
+  const users = await User.find().populate("agency", "name").lean();
   res.status(200).json({
     success: true,
     message: "Fetched all users successfully",
@@ -111,7 +110,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 // @access  Private (Admin only)
 export const getUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id).select(
-    "firstname lastname username email phone role"
+    "agency firstname lastname username email phone role"
   );
 
   if (!user) {
