@@ -109,16 +109,13 @@ export const getUsers = asyncHandler(async (req, res) => {
 // @route   GET /api/admin/users/:id
 // @access  Private (Admin only)
 export const getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id).select(
-    "agency firstname lastname username email phone role"
-  );
-
+  const user = await User.findById(req.params.id).populate("agency", "name").lean();
   if (!user) {
     return next(new ErrorResponse("User not found", 404));
   }
-
   res.status(200).json({
     success: true,
+    message: "Fetched user successful",
     data: user,
   });
 });
