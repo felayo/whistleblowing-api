@@ -95,7 +95,7 @@ export const createUser = asyncHandler(async (req, res) => {
 // @access  Private (Admin only)
 export const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select(
-    "username email role active createdAt"
+    "firstname lastname username active createdAt"
   ); // only necessary fields
 
   res.status(200).json({
@@ -111,7 +111,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 // @access  Private (Admin only)
 export const getUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id).select(
-    "username email role active createdAt"
+    "firstname lastname username email phone role"
   );
 
   if (!user) {
