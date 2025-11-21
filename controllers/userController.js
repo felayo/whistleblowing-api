@@ -160,7 +160,8 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/admin/users/:id
 // @access  Private (Admin only)
 export const deleteUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const userId = req.params.id;
+  const user = await User.findById(userId);
 
   if (!user) {
     return next(new ErrorResponse("User not found", 404));
@@ -176,7 +177,14 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
     }
   }
 
-  await user.deleteOne();
+  // Remove user from agency.users[]
+  await Agency.updateOne(
+    { _id: user.agency },
+    { $pull: { users: user._id } }
+  );
+
+   // Delete user
+  await User.findByIdAndDelete(userId);
 
   res.status(200).json({
     success: true,
