@@ -57,21 +57,26 @@ export const createUser = asyncHandler(async (req, res) => {
     role: role || "agency",
   });
 
-  // 🔗 If user is an agency staff, associate with the selected agency
+  // If user is an agency staff, associate with the selected agency
+  let agencyDoc = null;
+
   if (newUser.role === "agency" && agency) {
-    const agency = await Agency.findById(agency);
-    if (!agency) {
+    agencyDoc = await Agency.findById(agency);
+
+    if (!agencyDoc) {
       return res.status(404).json({
         success: false,
         message: "Agency not found",
       });
     }
+
     // Assign agency to user
-    newUser.agency = agency;
+    newUser.agency = agencyDoc._id;
     await newUser.save();
+
     // Add the user to the agency’s users array
-    agency.users.push(newUser._id);
-    await agency.save();
+    agencyDoc.users.push(newUser._id);
+    await agencyDoc.save();
   }
 
   res.status(201).json({
@@ -86,11 +91,12 @@ export const createUser = asyncHandler(async (req, res) => {
       phone: newUser.phone,
       createdAt: newUser.createdAt,
       role: newUser.role,
-      assignedAgency: agency || null,
+      assignedAgency: agencyDoc,
       active: newUser.active,
     },
   });
 });
+
 
 // @desc    Get all users
 // @route   GET /api/admin/users
