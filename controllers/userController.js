@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 // @route   POST /api/admin/users
 // @access  Private (Admin only)
 export const createUser = asyncHandler(async (req, res) => {
-  const { email, username, password, role, agencyId, firstname, lastname, phone } = req.body;
+  const { email, username, password, role, agency, firstname, lastname, phone } = req.body;
 
   // Validate required fields
   if (!email || !username || !password) {
@@ -58,8 +58,8 @@ export const createUser = asyncHandler(async (req, res) => {
   });
 
   // 🔗 If user is an agency staff, associate with the selected agency
-  if (newUser.role === "agency" && agencyId) {
-    const agency = await Agency.findById(agencyId);
+  if (newUser.role === "agency" && agency) {
+    const agency = await Agency.findById(agency);
     if (!agency) {
       return res.status(404).json({
         success: false,
@@ -67,7 +67,7 @@ export const createUser = asyncHandler(async (req, res) => {
       });
     }
     // Assign agency to user
-    newUser.agency = agencyId;
+    newUser.agency = agency;
     await newUser.save();
     // Add the user to the agency’s users array
     agency.users.push(newUser._id);
@@ -86,7 +86,7 @@ export const createUser = asyncHandler(async (req, res) => {
       phone: newUser.phone,
       createdAt: newUser.createdAt,
       role: newUser.role,
-      agencyAssigned: agencyId || null,
+      assignedAgency: agency || null,
       active: newUser.active,
     },
   });
