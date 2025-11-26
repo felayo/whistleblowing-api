@@ -4,6 +4,7 @@ import {
   getAgencyReports,
   getAgencyReportById,
   addAgencyMessage,
+  updateAgencyReportStatus
 } from "../controllers/agencyController.js";
 
 const router = express.Router();
@@ -181,6 +182,42 @@ router.get("/:id", getAgencyReportById);
  *         description: Report not found
  */
 router.post("/:reportId/messages", addAgencyMessage);
+
+/**
+ * @swagger
+ * /agency/{reportId}/status:     
+ *  patch: 
+ *    summary: Update the status of a report assigned to the agency
+ *   tags: [Agency]
+ *   security:
+ *    - bearerAuth: []
+ *   parameters:
+ *    - in: path
+ *     name: reportId
+ *    required: true
+ *    description: The ID of the report
+ *   schema:
+ *    type: string
+ *  requestBody:
+ *   required: true
+ *  content:
+ *   application/json:
+ *    schema:
+ *    type: object
+ *    properties:
+ *    status:
+ *    type: string
+ *   example: resolved
+ *  responses:
+ *  200:
+ *   description: Report status updated successfully
+ *  404:
+ *  description: Report not found
+ *  403:
+ *  description: Unauthorized to update this report
+ * ///  /agency/{reportId}/status
+ */
+router.patch("/:reportId/status", updateAgencyReportStatus);
 
 export default router;
 

@@ -159,3 +159,41 @@ export const addAgencyMessage = asyncHandler(async (req, res, next) => {
     data: report.comments,
   });
 });
+
+// @desc    Update the status of a report (Agency)
+// @route   PATCH /api/agency/reports/:id/status
+// @access  Private (Agency only)
+export const updateAgencyReportStatus = asyncHandler(async (req, res) => {
+  const reportId = req.params.id;
+  const { status } = req.body;
+  const agencyId = req.user?.id;
+
+  if (!status) {
+    res.status(400);
+    throw new Error("Status is required");
+  }
+
+  // Find the report
+  const report = await Report.findById(reportId);
+
+  if (!report) {
+    res.status(404);
+    throw new Error("Report not found");
+  }
+
+  // Check report is assigned to this agency
+  if (!report.agencyAssigned || report.agencyAssigned.toString() !== agencyId) {
+    res.status(403);
+    throw new Error("You are not authorized to update this report");
+  }
+
+  // Update only status
+  report.status = status;
+  await report.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Status updated successfully",
+    data: report,
+  });
+});
