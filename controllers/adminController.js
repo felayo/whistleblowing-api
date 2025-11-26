@@ -431,8 +431,60 @@ export const getAllAgencies = asyncHandler(async (req, res) => {
 // @access  Private (Admin)
 export const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { soft } = req.query;
 
-  // Validate ID
+  // Validate ID format
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid category ID format.",
+    });
+  }
+
+  // Find the category
+  const category = await Category.findById(id);
+
+  if (!category) {
+    return res.status(404).json({
+      success: false,
+      message: "Category not found.",
+    });
+  }
+
+  // ➤ SOFT DELETE
+  if (soft === "true") {
+    if (category.deleted === true) {
+      return res.status(400).json({
+        success: false,
+        message: "Category is already deleted.",
+      });
+    }
+
+    category.deleted = true;
+    await category.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Category soft deleted successfully.",
+      data: category,
+    });
+  }
+
+  // ➤ HARD DELETE
+  await category.deleteOne();
+
+  return res.status(200).json({
+    success: true,
+    message: "Category permanently deleted.",
+  });
+});
+
+// @desc    Restore a soft-deleted category
+// @route   PUT /api/admin/categories/:id/restore
+// @access  Private (Admin) 
+export const restoreCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
   if (!id.match(/^[0-9a-fA-F]{24}$/)) {
     return res.status(400).json({
       success: false,
@@ -449,13 +501,23 @@ export const deleteCategory = asyncHandler(async (req, res) => {
     });
   }
 
-  await category.deleteOne();
+  if (category.deleted === false) {
+    return res.status(400).json({
+      success: false,
+      message: "Category is already active.",
+    });
+  }
+
+  category.deleted = false;
+  await category.save();
 
   res.status(200).json({
     success: true,
-    message: "Category deleted successfully.",
+    message: "Category restored successfully.",
+    data: category,
   });
 });
+
 
 // @desc    Delete an agency
 // @route   DELETE /api/admin/agencies/:id

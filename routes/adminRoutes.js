@@ -14,6 +14,7 @@ import {
   deleteCategory,
   deleteAgency,
   addAdminMessage,
+  restoreCategory,
 } from "../controllers/adminController.js";
 import {
   createUser,
@@ -301,6 +302,7 @@ router
  * /admin/categories/{id}:
  *   delete:
  *     summary: Delete a category
+ *     description: Deletes a category by its ID.
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -308,14 +310,129 @@ router
  *       - in: path
  *         name: id
  *         required: true
- *         description: Category ID
+ *         description: Category ID (MongoDB ObjectId)
+ *         schema:
+ *           type: string
+ *           example: "65f129c12a4bd9d3d8e6c123"
  *     responses:
  *       200:
  *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Category deleted successfully.
+ *
+ *       400:
+ *         description: Invalid category ID format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid category ID format.
+ *
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Category not found.
+ *
+ *       500:
+ *         description: Server error
  */
 router
   .route("/categories/:id")
   .delete(protect, authorize("admin"), deleteCategory);
+
+/**
+ * @swagger
+ * /admin/categories/{id}/restore:
+ *   put:
+ *     summary: Restore a soft-deleted category
+ *     description: Restores a previously soft-deleted category by its ID.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Category ID (MongoDB ObjectId)
+ *         schema:
+ *           type: string
+ *           example: "65f129c12a4bd9d3d8e6c123"
+ *     responses:
+ *       200:
+ *         description: Category restored successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Category restored successfully.
+ *                 category:
+ *                   type: object
+ *                   description: Restored category data
+ *
+ *       400:
+ *         description: Invalid category ID format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid category ID format.
+ *
+ *       404:
+ *         description: Category not found or not soft-deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Category not found or not deleted.
+ *
+ *       500:
+ *         description: Server error
+ */
+router
+  .route("/categories/:id/restore")
+  .put(protect, authorize("admin"), restoreCategory);
 
 /**
  * @swagger

@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  description: String
+  description: String,
+  deleted: { type: Boolean, default: false }
 });
 
 
