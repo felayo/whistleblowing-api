@@ -619,8 +619,8 @@ router
  */
 router
   .route("/users/:id")
-  .get(protect, authorize("admin"), getUser)
-  .put(protect, authorize("admin"), updateUser)
+  .get(protect, authorize("admin agency"), getUser)
+  .put(protect, authorize("admin agency"), updateUser)
   .delete(protect, authorize("admin"), deleteUser);
 
 export default router;
