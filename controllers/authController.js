@@ -55,7 +55,7 @@ export const refresh = asyncHandler(async (req, res) => {
       token,
       user: {
         id: foundUser._id,
-        name: foundUser.name,
+        username: foundUser.username,
         email: foundUser.email,
         role: foundUser.role,
       },
