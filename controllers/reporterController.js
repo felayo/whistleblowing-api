@@ -264,3 +264,77 @@ export const addWhistleblowerMessage = asyncHandler(async (req, res) => {
     },
   });
 });
+
+// @desc    Get public scorecard summary
+// @route   GET /api/reports/scorecard/public
+// @access  Public
+export const getPublicScorecard = asyncHandler(async (req, res) => {
+  try {
+    // Fetch all reports with agency info populated
+    const reports = await Report.find()
+      .populate("agencyAssigned", "name")
+      .populate("category", "name");
+
+    if (!reports.length) {
+      return res.status(200).json({
+        success: true,
+        message: "No reports found",
+        summary: {},
+        agencies: [],
+      });
+    }
+
+    // Global summary counts
+    const summary = {
+      totalReports: reports.length,
+      pending: reports.filter(r => r.status === "pending").length,
+      underReview: reports.filter(r => r.status === "under review").length,
+      resolved: reports.filter(r => r.status === "resolved").length,
+      closed: reports.filter(r => r.status === "closed").length,
+    };
+
+    // Build agency performance summary
+    const agencyMap = {};
+
+    reports.forEach((report) => {
+      const agency = report.agencyAssigned;
+
+      if (!agency) return; // reports not yet assigned are ignored
+
+      const agencyId = agency._id.toString();
+
+      if (!agencyMap[agencyId]) {
+        agencyMap[agencyId] = {
+          agencyId,
+          agencyName: agency.name,
+          total: 0,
+          pending: 0,
+          underReview: 0,
+          resolved: 0,
+          closed: 0,
+        };
+      }
+
+      // Increment total
+      agencyMap[agencyId].total += 1;
+
+      // Increment status group
+      if (report.status === "pending") agencyMap[agencyId].pending += 1;
+      if (report.status === "under review") agencyMap[agencyId].underReview += 1;
+      if (report.status === "resolved") agencyMap[agencyId].resolved += 1;
+      if (report.status === "closed") agencyMap[agencyId].closed += 1;
+    });
+
+    const agencies = Object.values(agencyMap);
+
+    return res.status(200).json({
+      success: true,
+      summary,
+      agencies,
+    });
+
+  } catch (error) {
+    res.status(500);
+    throw new Error(`Failed to generate scorecard: ${error.message}`);
+  }
+});

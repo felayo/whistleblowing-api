@@ -7,6 +7,7 @@ import reportRoutes from "./routes/reporterRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import agencyRoutes from "./routes/agencyRoutes.js";
+import publicRoutes from "./routes/publicRoutes.js";
 
 import ErrorHandler from "./middleware/error.js";
 import { logger } from "./middleware/logger.js";
@@ -31,6 +32,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/agency", agencyRoutes);
+app.use("/api/scorecard", publicRoutes);
 
 // error handler
 app.use(ErrorHandler);
