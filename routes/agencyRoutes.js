@@ -6,6 +6,7 @@ import {
   addAgencyMessage,
   updateAgencyReportStatus
 } from "../controllers/agencyController.js";
+import { getUser, updateUser } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -218,6 +219,10 @@ router.post("/:reportId/messages", addAgencyMessage);
  * ///  /agency/{reportId}/status
  */
 router.patch("/:reportId/status", updateAgencyReportStatus);
+
+router.get("/users/:id", getUser);
+router.put("/users/:id", updateUser);
+
 
 export default router;
 
