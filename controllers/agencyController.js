@@ -164,9 +164,9 @@ export const addAgencyMessage = asyncHandler(async (req, res, next) => {
 // @route   PATCH /api/agency/reports/:id/status
 // @access  Private (Agency only)
 export const updateAgencyReportStatus = asyncHandler(async (req, res) => {
-  const reportId = req.params.id;
+  const { reportId } = req.params;
   const { status } = req.body;
-  const agencyId = req.user?.id;
+  
 
   if (!status) {
     res.status(400);
@@ -181,10 +181,23 @@ export const updateAgencyReportStatus = asyncHandler(async (req, res) => {
     throw new Error("Report not found");
   }
 
-  // Check report is assigned to this agency
-  if (!report.agencyAssigned || report.agencyAssigned.toString() !== agencyId) {
-    res.status(403);
-    throw new Error("You are not authorized to update this report");
+  // Find the agency associated with the logged-in user
+  const agency = await Agency.findOne({ users: req.user._id });
+  if (!agency) {
+    return next(new ErrorResponse("Agency not found for this user.", 404));
+  }
+
+  // 4️⃣ Ensure this report belongs to the agency
+  if (
+    !report.agencyAssigned ||
+    report.agencyAssigned._id.toString() !== agency._id.toString()
+  ) {
+    return next(
+      new ErrorResponse(
+        "Unauthorized: This report is not assigned to your agency.",
+        403
+      )
+    );
   }
 
   // Update only status
